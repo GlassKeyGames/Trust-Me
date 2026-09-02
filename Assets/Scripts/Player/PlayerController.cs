@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -98,6 +100,11 @@ public class PlayerController : MonoBehaviour
                 (lowJumpMultiplier - 1f) *
                 Time.deltaTime;
         }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RestartLevel();
+        }
     }
 
     void FixedUpdate()
@@ -126,6 +133,45 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = new Vector2(
             rb.linearVelocity.x + movement,
             rb.linearVelocity.y
+        );
+    }
+
+    public void DisableMovement()
+    {
+        enabled = false;
+
+        rb.linearVelocity = Vector2.zero;
+    }
+
+    public void PlayDeathEffect()
+    {
+        transform.localScale = new Vector3(
+            transform.localScale.x,
+            0.2f,
+            transform.localScale.z
+        );
+    }
+
+    private void RestartLevel()
+    {
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().buildIndex
+        );
+    }
+
+    public void Die()
+    {
+        DisableMovement();
+        PlayDeathEffect();
+        StartCoroutine(RestartAfterDeath());
+    }
+
+    private IEnumerator RestartAfterDeath()
+    {
+        yield return new WaitForSeconds(0.25f);
+
+        SceneManager.LoadScene(
+            SceneManager.GetActiveScene().buildIndex
         );
     }
 }
